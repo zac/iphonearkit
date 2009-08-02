@@ -55,13 +55,16 @@ float CalculateAngle(float nLat1, float nLon1, float nLat2, float nLon2)
 	self.radialDistance = CalculateDistance(origin.coordinate.latitude, origin.coordinate.longitude, self.geoLocation.coordinate.latitude, self.geoLocation.coordinate.longitude);
 	//self.inclination = 0.0; // TODO: Make with altitude.
 	self.azimuth = CalculateAngle(origin.coordinate.latitude, origin.coordinate.longitude, self.geoLocation.coordinate.latitude, self.geoLocation.coordinate.longitude);
+	
+	
+	NSLog(@"title: %@ distance: %f self.azimuth: %f", self.title, self.radialDistance * (180 / M_PI), self.azimuth * (180 / M_PI));
 }
 
 + (ARGeoCoordinate *)coordinateWithLocation:(CLLocation *)location {
 	ARGeoCoordinate *newCoordinate = [[ARGeoCoordinate alloc] init];
 	newCoordinate.geoLocation = location;
 	
-	newCoordinate.title = @"GEO!";
+	newCoordinate.title = @"GEO";
 	
 	return [newCoordinate autorelease];
 }

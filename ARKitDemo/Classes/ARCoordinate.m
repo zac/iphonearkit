@@ -21,7 +21,7 @@
 	newCoordinate.inclination = newInclination;
 	newCoordinate.azimuth = newAzimuth;
 	
-	newCoordinate.title = @"Testing!";
+	newCoordinate.title = @"";
 	
 	return [newCoordinate autorelease];
 }

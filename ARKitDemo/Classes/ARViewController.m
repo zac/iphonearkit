@@ -201,7 +201,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	
 	NSMutableArray *tempArray = [NSMutableArray array];
 	
-	for (ARCoordinate *coordinate in newItems) {
+	for (ARCoordinate *coordinate in locationItems) {
 		//create the views here.
 		
 		//call out for the delegate's view.

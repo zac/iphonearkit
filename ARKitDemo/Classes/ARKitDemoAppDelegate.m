@@ -120,6 +120,16 @@
 	[tempLocation release];
 	
 	
+	tempLocation = [[CLLocation alloc] initWithLatitude:19.611544 longitude:-155.665283];
+	
+	tempCoordinate = [ARGeoCoordinate coordinateWithLocation:tempLocation];
+	tempCoordinate.inclination = M_PI/30;
+	tempCoordinate.title = @"Hawaii";
+	
+	[tempLocationArray addObject:tempCoordinate];
+	[tempLocation release];
+	
+	
 	tempLocation = [[CLLocation alloc] initWithLatitude:-40.900557 longitude:174.885971];
 	
 	tempCoordinate = [ARGeoCoordinate coordinateWithLocation:tempLocation];
@@ -194,8 +204,7 @@
 	[tempLocationArray addObject:tempCoordinate];
 	[tempLocation release];
 	
-	
-	tempLocation = [[CLLocation alloc] initWithLatitude:48.139127 longitude:11.580186];
+	tempLocation = [[CLLocation alloc] initWithLatitude:32.781078 longitude:-96.797111];
 	
 	tempCoordinate = [ARGeoCoordinate coordinateWithLocation:tempLocation];
 	tempCoordinate.title = @"Dallas";
