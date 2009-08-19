@@ -9,6 +9,8 @@
 #import "ARKitDemoAppDelegate.h"
 #import "ARGeoCoordinate.h"
 
+#import <MapKit/MapKit.h>
+
 @implementation ARKitDemoAppDelegate
 
 @synthesize window;
@@ -16,6 +18,7 @@
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
 	
 	ARGeoViewController *viewController = [[ARGeoViewController alloc] init];
+	viewController.debugMode = YES;
 	
 	viewController.delegate = self;
 	
@@ -24,10 +27,13 @@
 	CLLocation *tempLocation;
 	ARGeoCoordinate *tempCoordinate;
 	
-	tempLocation = [[CLLocation alloc] initWithLatitude:39.550051 longitude:-105.782067];
+	CLLocationCoordinate2D location;
+	location.latitude = 39.550051;
+	location.longitude = -105.782067;
+	
+	tempLocation = [[CLLocation alloc] initWithCoordinate:location altitude:-1609.0 horizontalAccuracy:1.0 verticalAccuracy:1.0 timestamp:[NSDate date]];
 	
 	tempCoordinate = [ARGeoCoordinate coordinateWithLocation:tempLocation];
-	tempCoordinate.inclination = M_PI/10;
 	tempCoordinate.title = @"Denver";
 	
 	[tempLocationArray addObject:tempCoordinate];
@@ -213,7 +219,7 @@
 	[tempLocation release];
 	
 	
-	viewController.locationItems = tempLocationArray;
+	[viewController addCoordinates:tempLocationArray];
 	[tempLocationArray release];
 		
 	CLLocation *newCenter = [[CLLocation alloc] initWithLatitude:37.41711 longitude:-122.02528];
@@ -233,7 +239,7 @@
 #define BOX_HEIGHT 100
 
 - (UIView *)viewForCoordinate:(ARCoordinate *)coordinate {
-		
+	
 	CGRect theFrame = CGRectMake(0, 0, BOX_WIDTH, BOX_HEIGHT);
 	UIView *tempView = [[UIView alloc] initWithFrame:theFrame];
 	

@@ -58,7 +58,7 @@
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"%@ r: %f φ: %f θ: %f", self.title, self.radialDistance, self.azimuth * (180.0/M_PI), self.inclination * (180.0/M_PI)];
+	return [NSString stringWithFormat:@"%@ r: %fm φ: %f° θ: %f°", self.title, self.radialDistance, self.azimuth * (180.0/M_PI), self.inclination * (180.0/M_PI)];
 }
 
 @end

@@ -16,47 +16,65 @@
 @implementation ARViewController
 
 @synthesize locationManager, accelerometerManager;
-@synthesize centerCoordinate, locationItems, locationViews;
+@synthesize centerCoordinate;
+
+@synthesize debugMode = _debugMode;
+
+@synthesize coordinates = ar_coordinates;
 
 @synthesize delegate;
 
-@synthesize picker;
+- (id)init {
+	if (!(self = [super init])) return nil;
+	
+	_debugView = [[UILabel alloc] initWithFrame:CGRectMake(0, 270.0, 480.0, 30.0)];
+	_debugView.textAlignment = UITextAlignmentCenter;
+	_debugView.text = @"Waiting...";
+	
+	_debugMode = NO;
+	
+	ar_coordinates = [[NSMutableArray alloc] init];
+	ar_coordinateViews = [[NSMutableArray alloc] init];
+	
+	return self;
+}
+
+- (id)initWithLocationManager:(CLLocationManager *)manager {
+	
+	if (!(self = [super init])) return nil;
+	
+	//use the passed in location manager instead of ours.
+	self.locationManager = manager;
+	
+	return self;
+}
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
 	UIView *contentView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
-	
-	self.picker = [[[ChromelessImagePickerViewController alloc] init] autorelease];
-	self.picker.allowsImageEditing = NO;
-	
-	// make sure camera is avaialble before setting it as source
-	//
-	if ([ChromelessImagePickerViewController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-#if !TARGET_IPHONE_SIMULATOR
-		self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;	
-#endif
-	}
-	
-	[contentView addSubview:self.picker.view];
-		
+			
 	contentView.backgroundColor = [UIColor clearColor];
 	
-	locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 270.0, 480.0, 30.0)];
-	locationLabel.textAlignment = UITextAlignmentCenter;
-	locationLabel.text = @"Waiting...";
-	
-	[contentView addSubview:locationLabel];
+	if (self.debugMode) [contentView addSubview:_debugView];
 	
 	self.view = contentView;
 	[contentView release];
 }
 
+- (void)setDebugMode:(BOOL)flag {
+	if (self.debugMode == flag) return;
+	
+	_debugMode = flag;
+	
+	//we don't need to update the view.
+	if (![self isViewLoaded]) return;
+	
+	if (self.debugMode) [self.view addSubview:_debugView];
+	else [_debugView removeFromSuperview];
+}
+
 - (void)viewDidLoad {
-	self.picker.view.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
-	
-	NSLog(@"frame: %@", NSStringFromCGRect(self.picker.view.frame));
-	
-	self.picker.view.transform = CGAffineTransformMakeRotation(- M_PI / 2.0);
+	[super viewDidLoad];
 }
 
 - (BOOL)viewportContainsCoordinate:(ARCoordinate *)coordinate {
@@ -85,7 +103,7 @@
 	
 	//check the height.
 	result = result && (coordinate.inclination > bottomInclination && coordinate.inclination < topInclination);
-	
+		
 	return result;
 }
 
@@ -102,6 +120,7 @@
 		
 		//we want every move.
 		self.locationManager.headingFilter = kCLHeadingFilterNone;
+		self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
 		
 		[self.locationManager startUpdatingHeading];
 		self.locationManager.delegate = self;
@@ -137,12 +156,7 @@
 		//it's past the 0 point.
 		point.x = ((2 * M_PI - leftAzimuth + pointAzimuth) / VIEWPORT_WIDTH_RADIANS) * realityView.frame.size.height;
 	} else {
-		
 		point.x = ((pointAzimuth - leftAzimuth) / VIEWPORT_WIDTH_RADIANS) * realityView.frame.size.height;
-		
-		if ([coordinate.title isEqualToString:@"Portland"]) {
-			NSLog(@"point.x: %f, pointAzimuth: %f, leftAzimuth: %f", point.x, pointAzimuth, leftAzimuth);
-		}
 	}
 	
 	//y coordinate.
@@ -191,43 +205,66 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	}
 }
 
-- (void)setLocationItems:(NSArray *)newItems {
-	[locationItems release];
-	locationItems = [newItems retain];
-	
-	NSMutableArray *sortedArray = [NSMutableArray arrayWithArray:newItems];
-	[sortedArray sortUsingFunction:LocationSortClosestFirst context:NULL];
-	locationItems = [sortedArray copy];
-	
-	NSMutableArray *tempArray = [NSMutableArray array];
-	
-	for (ARCoordinate *coordinate in locationItems) {
-		//create the views here.
+- (void)addCoordinate:(ARCoordinate *)coordinate {
+	[self addCoordinate:coordinate animated:YES];
+}
+
+- (void)addCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated {
+	//do some kind of animation?
+	[ar_coordinates addObject:coordinate];
+	if ([self.delegate respondsToSelector:@selector(viewForCoordinate:)]) {
+		[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
+	}
+}
+
+- (void)addCoordinates:(NSArray *)newCoordinates {
+	[ar_coordinates addObjectsFromArray:newCoordinates];
 		
+	for (ARCoordinate *coordinate in ar_coordinates) {		
 		//call out for the delegate's view.
+		//there's probably a better time to do this.
 		if ([self.delegate respondsToSelector:@selector(viewForCoordinate:)]) {
-			[tempArray addObject:[self.delegate viewForCoordinate:coordinate]];
+			[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
 		}
 	}
-	
-	self.locationViews = tempArray;
+}
+
+- (void)removeCoordinate:(ARCoordinate *)coordinate {
+	[self removeCoordinate:coordinate animated:YES];
+}
+
+- (void)removeCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated {
+	//do some kind of animation?
+	[ar_coordinates removeObject:coordinate];
+}
+
+- (void)removeCoordinates:(NSArray *)coordinates {	
+	for (ARCoordinate *coordinateToRemove in coordinates) {
+		NSUInteger indexToRemove = [ar_coordinates indexOfObject:coordinateToRemove];
+		
+		//TODO: Error checking in here.
+		
+		[ar_coordinates removeObjectAtIndex:indexToRemove];
+		[ar_coordinateViews removeObjectAtIndex:indexToRemove];
+	}
 }
 
 - (void)updateLocations {
 	//update locations!
-	
-	if (!self.locationViews || self.locationViews.count == 0) {
+		
+	if (!ar_coordinateViews || ar_coordinateViews.count == 0) {
 		return;
 	}
 	
-	locationLabel.text = [self.centerCoordinate description];
+	_debugView.text = [self.centerCoordinate description];
 	
 	int index = 0;
-	for (ARCoordinate *item in self.locationItems) {
+	for (ARCoordinate *item in ar_coordinates) {
 		
-		UIView *viewToDraw = [self.locationViews objectAtIndex:index];
-		
+		UIView *viewToDraw = [ar_coordinateViews objectAtIndex:index];
+				
 		if ([self viewportContainsCoordinate:item]) {
+			
 			CGPoint loc = [self pointInView:self.view forCoordinate:item];
 			
 			float width = viewToDraw.frame.size.width;
@@ -244,8 +281,11 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	}
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {	
-	self.centerCoordinate.azimuth = fmod(newHeading.trueHeading + 90.0, 360.0) * (2 * (M_PI / 360.0));
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+	
+	//NSLog(@"x: %f y: %f z: %f", newHeading.x, newHeading.y, newHeading.z);
+	
+	self.centerCoordinate.azimuth = fmod(newHeading.magneticHeading + 90.0, 360.0) * (2 * (M_PI / 360.0));
 	[self updateLocations];
 }
 
@@ -254,11 +294,11 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	[self.picker viewDidAppear:animated];
+	[super viewDidAppear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	[self.picker viewWillAppear:animated];
+	[super viewWillAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -275,7 +315,10 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 
 
 - (void)dealloc {
-	self.picker = nil;
+	[_debugView release];
+	
+	[ar_coordinateViews release];
+	[ar_coordinates release];
 	
     [super dealloc];
 }

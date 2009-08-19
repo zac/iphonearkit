@@ -26,19 +26,36 @@
 	UIAccelerometer *accelerometerManager;
 	
 	ARCoordinate *centerCoordinate;
-	
-	NSRange *widthViewportRange;
-	NSRange *heightViewportRange;
-	
-	UILabel *locationLabel;
+		
+	UILabel *_debugView;
 	
 	id delegate;
 	
-	ChromelessImagePickerViewController *picker;
+@private
+	BOOL _debugMode;
 	
-	NSArray *locationItems;
-	NSArray *locationViews;
+	NSMutableArray *ar_coordinates;
+	NSMutableArray *ar_coordinateViews;
 }
+
+@property (readonly) NSArray *coordinates;
+
+@property BOOL debugMode;
+
+//adding coordinates to the 
+- (void)addCoordinate:(ARCoordinate *)coordinate;
+- (void)addCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated;
+
+- (void)addCoordinates:(NSArray *)newCoordinates;
+
+
+//removing coordinates
+- (void)removeCoordinate:(ARCoordinate *)coordinate;
+- (void)removeCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated;
+
+- (void)removeCoordinates:(NSArray *)coordinates;
+
+- (id)initWithLocationManager:(CLLocationManager *)manager;
 
 - (void)startListening;
 - (void)updateLocations;
@@ -49,12 +66,7 @@
 
 @property (nonatomic, assign) id delegate;
 
-@property (nonatomic, retain) ChromelessImagePickerViewController *picker;
-
 @property (retain) ARCoordinate *centerCoordinate;
-
-@property (nonatomic, retain) NSArray *locationItems;
-@property (nonatomic, copy) NSArray *locationViews;
 
 @property (nonatomic, retain) UIAccelerometer *accelerometerManager;
 @property (nonatomic, retain) CLLocationManager *locationManager;

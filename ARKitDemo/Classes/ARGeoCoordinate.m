@@ -13,58 +13,40 @@
 
 @synthesize geoLocation;
 
-double ToRad( double nVal )
-{
-	return nVal * (M_PI/180);
-}
-
-double CalculateDistance( double nLat1, double nLon1, double nLat2, double nLon2 )
-{
-	double nRadius = 6371; // Earth's radius in Kilometers
+- (float)angleFromCoordinate:(CLLocationCoordinate2D)first toCoordinate:(CLLocationCoordinate2D)second {
+	float longitudinalDifference = second.longitude - first.longitude;
+	float latitudinalDifference = second.latitude - first.latitude;
+	float possibleAzimuth = (M_PI * .5f) - atan(latitudinalDifference / longitudinalDifference);
+	if (longitudinalDifference > 0) return possibleAzimuth;
+	else if (longitudinalDifference < 0) return possibleAzimuth + M_PI;
+	else if (latitudinalDifference < 0) return M_PI;
 	
-	// Get the difference between our two points then convert the difference into radians
-	double nDLat = ToRad(nLat2 - nLat1);  
-	double nDLon = ToRad(nLon2 - nLon1); 
-	
-	nLat1 =  ToRad(nLat1);
-	nLat2 =  ToRad(nLat2);
-	
-	double nA =	pow ( sin(nDLat/2), 2 ) +
-	cos(nLat1) * cos(nLat2) * 
-	pow ( sin(nDLon/2), 2 );
-	
-	double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
-	double nD = nRadius * nC;
-	
-	return nD; // Return our calculated distance
-}
-
-float CalculateAngle(float nLat1, float nLon1, float nLat2, float nLon2)
-{
-	
-	float longitudinalDifference = nLon2 - nLon1;
-    float latitudinalDifference = nLat2 - nLat1;
-    float azimuth = (M_PI * .5f) - atan(latitudinalDifference / longitudinalDifference);
-    if (longitudinalDifference > 0) return azimuth;
-    else if (longitudinalDifference < 0) return azimuth + M_PI;
-    else if (latitudinalDifference < 0) return M_PI;
-    return 0.0f;
+	return 0.0f;
 }
 
 - (void)calibrateUsingOrigin:(CLLocation *)origin {
-	self.radialDistance = CalculateDistance(origin.coordinate.latitude, origin.coordinate.longitude, self.geoLocation.coordinate.latitude, self.geoLocation.coordinate.longitude);
-	//self.inclination = 0.0; // TODO: Make with altitude.
-	self.azimuth = CalculateAngle(origin.coordinate.latitude, origin.coordinate.longitude, self.geoLocation.coordinate.latitude, self.geoLocation.coordinate.longitude);
 	
+	if (!self.geoLocation) return;
 	
-	NSLog(@"title: %@ distance: %f self.azimuth: %f", self.title, self.radialDistance * (180 / M_PI), self.azimuth * (180 / M_PI));
+	double baseDistance = [origin getDistanceFrom:self.geoLocation];
+	
+	self.radialDistance = sqrt(pow(origin.altitude - self.geoLocation.altitude, 2) + pow(baseDistance, 2));
+	
+	NSLog(@"origin.altitude: %f  self.geoLocation.altitude: %f", origin.altitude, self.geoLocation.altitude);
+	
+	float angle = sin(ABS(origin.altitude - self.geoLocation.altitude) / self.radialDistance);
+	
+	if (origin.altitude > self.geoLocation.altitude) angle = -angle;
+	
+	self.inclination = angle;
+	self.azimuth = [self angleFromCoordinate:origin.coordinate toCoordinate:self.geoLocation.coordinate];
 }
 
 + (ARGeoCoordinate *)coordinateWithLocation:(CLLocation *)location {
 	ARGeoCoordinate *newCoordinate = [[ARGeoCoordinate alloc] init];
 	newCoordinate.geoLocation = location;
 	
-	newCoordinate.title = @"GEO";
+	newCoordinate.title = @"";
 	
 	return [newCoordinate autorelease];
 }

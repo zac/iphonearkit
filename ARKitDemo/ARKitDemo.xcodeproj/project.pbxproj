@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1118A9AA1025701300C94460 /* ChromelessImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1118A9A91025701300C94460 /* ChromelessImagePickerViewController.m */; };
 		1118AA4A10257DCE00C94460 /* location.png in Resources */ = {isa = PBXBuildFile; fileRef = 1118AA4910257DCE00C94460 /* location.png */; };
 		111A141C1024C875002D39A1 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A141B1024C875002D39A1 /* CoreLocation.framework */; };
 		111A142C1024C8A6002D39A1 /* ARViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 111A142A1024C8A6002D39A1 /* ARViewController.m */; };
 		112543AA1024DE590086106E /* ARCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = 112543A91024DE590086106E /* ARCoordinate.m */; };
 		11609B0B1026014F00A964C8 /* ARGeoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11609B0A1026014F00A964C8 /* ARGeoViewController.m */; };
+		116DC887102933A200EB5A0A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 116DC886102933A200EB5A0A /* MapKit.framework */; };
 		1D3623260D0F684500981E51 /* ARKitDemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* ARKitDemoAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -23,8 +23,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1118A9A81025701300C94460 /* ChromelessImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChromelessImagePickerViewController.h; sourceTree = "<group>"; };
-		1118A9A91025701300C94460 /* ChromelessImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChromelessImagePickerViewController.m; sourceTree = "<group>"; };
 		1118AA4910257DCE00C94460 /* location.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = location.png; sourceTree = "<group>"; };
 		111A141B1024C875002D39A1 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		111A142A1024C8A6002D39A1 /* ARViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARViewController.m; sourceTree = "<group>"; };
@@ -33,6 +31,7 @@
 		112543A91024DE590086106E /* ARCoordinate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARCoordinate.m; sourceTree = "<group>"; };
 		11609B091026014F00A964C8 /* ARGeoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARGeoViewController.h; sourceTree = "<group>"; };
 		11609B0A1026014F00A964C8 /* ARGeoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARGeoViewController.m; sourceTree = "<group>"; };
+		116DC886102933A200EB5A0A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* ARKitDemoAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARKitDemoAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* ARKitDemoAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARKitDemoAppDelegate.m; sourceTree = "<group>"; };
@@ -56,6 +55,7 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				111A141C1024C875002D39A1 /* CoreLocation.framework in Frameworks */,
+				116DC887102933A200EB5A0A /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +75,6 @@
 		111A142D1024C8AC002D39A1 /* ARKIt */ = {
 			isa = PBXGroup;
 			children = (
-				1118A9A81025701300C94460 /* ChromelessImagePickerViewController.h */,
-				1118A9A91025701300C94460 /* ChromelessImagePickerViewController.m */,
 				112543A81024DE590086106E /* ARCoordinate.h */,
 				112543A91024DE590086106E /* ARCoordinate.m */,
 				111A142B1024C8A6002D39A1 /* ARViewController.h */,
@@ -131,6 +129,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				116DC886102933A200EB5A0A /* MapKit.framework */,
 				111A141B1024C875002D39A1 /* CoreLocation.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -197,7 +196,6 @@
 				1D3623260D0F684500981E51 /* ARKitDemoAppDelegate.m in Sources */,
 				111A142C1024C8A6002D39A1 /* ARViewController.m in Sources */,
 				112543AA1024DE590086106E /* ARCoordinate.m in Sources */,
-				1118A9AA1025701300C94460 /* ChromelessImagePickerViewController.m in Sources */,
 				CE169F581025704E00556F8F /* ARGeoCoordinate.m in Sources */,
 				11609B0B1026014F00A964C8 /* ARGeoViewController.m in Sources */,
 			);

@@ -18,7 +18,7 @@
 	[centerLocation release];
 	centerLocation = [newLocation retain];
 	
-	for (ARGeoCoordinate *geoLocation in self.locationItems) {
+	for (ARGeoCoordinate *geoLocation in self.coordinates) {
 		if ([geoLocation isKindOfClass:[ARGeoCoordinate class]]) {
 			[geoLocation calibrateUsingOrigin:centerLocation];
 			

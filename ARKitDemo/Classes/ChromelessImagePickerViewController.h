@@ -22,8 +22,6 @@
 	NSTimer *pTimer;
 }
 
--(void)inspectView: (UIView *)theView depth:(int)depth path:(NSString *)path;
-
 @property (nonatomic, retain) NSTimer *pTimer;
 
 @end
