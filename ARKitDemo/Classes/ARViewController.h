@@ -3,7 +3,7 @@
 //  ARKitDemo
 //
 //  Created by Zac White on 8/1/09.
-//  Copyright 2009 Gravity Mobile. All rights reserved.
+//  Copyright 2009 Zac White. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -11,8 +11,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "ARCoordinate.h"
-
-#import "ChromelessImagePickerViewController.h"
 
 @protocol ARViewDelegate
 
@@ -26,13 +24,17 @@
 	UIAccelerometer *accelerometerManager;
 	
 	ARCoordinate *centerCoordinate;
-		
-	UILabel *_debugView;
+	
+	UIImagePickerController *cameraController;
 	
 	id delegate;
 	
 @private
-	BOOL _debugMode;
+	BOOL ar_debugMode;
+	
+	UIView *ar_overlayView;
+	
+	UILabel *ar_debugView;
 	
 	NSMutableArray *ar_coordinates;
 	NSMutableArray *ar_coordinateViews;
@@ -42,7 +44,7 @@
 
 @property BOOL debugMode;
 
-//adding coordinates to the 
+//adding coordinates to the underlying data model.
 - (void)addCoordinate:(ARCoordinate *)coordinate;
 - (void)addCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated;
 
@@ -63,6 +65,8 @@
 - (CGPoint)pointInView:(UIView *)realityView forCoordinate:(ARCoordinate *)coordinate;
 
 - (BOOL)viewportContainsCoordinate:(ARCoordinate *)coordinate;
+
+@property (nonatomic, retain) UIImagePickerController *cameraController;
 
 @property (nonatomic, assign) id delegate;
 

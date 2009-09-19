@@ -3,38 +3,50 @@
 //  ARKitDemo
 //
 //  Created by Zac White on 8/1/09.
-//  Copyright 2009 Gravity Mobile. All rights reserved.
+//  Copyright 2009 Zac White. All rights reserved.
 //
 
 #import "ARViewController.h"
 
-#import "ChromelessImagePickerViewController.h"
-
-#define VIEWPORT_WIDTH_RADIANS .7392
-#define VIEWPORT_HEIGHT_RADIANS .5
+#define VIEWPORT_WIDTH_RADIANS .5
+#define VIEWPORT_HEIGHT_RADIANS .7392
 
 @implementation ARViewController
 
 @synthesize locationManager, accelerometerManager;
 @synthesize centerCoordinate;
 
-@synthesize debugMode = _debugMode;
+@synthesize debugMode = ar_debugMode;
 
 @synthesize coordinates = ar_coordinates;
 
-@synthesize delegate;
+@synthesize delegate = ar_delegate;
+
+@synthesize cameraController;
 
 - (id)init {
 	if (!(self = [super init])) return nil;
 	
-	_debugView = [[UILabel alloc] initWithFrame:CGRectMake(0, 270.0, 480.0, 30.0)];
-	_debugView.textAlignment = UITextAlignmentCenter;
-	_debugView.text = @"Waiting...";
+	ar_debugView = [[UILabel alloc] initWithFrame:CGRectZero];
+	ar_debugView.textAlignment = UITextAlignmentCenter;
+	ar_debugView.text = @"Waiting...";
 	
-	_debugMode = NO;
+	ar_debugMode = NO;
 	
 	ar_coordinates = [[NSMutableArray alloc] init];
 	ar_coordinateViews = [[NSMutableArray alloc] init];
+	
+	self.cameraController = [[[UIImagePickerController alloc] init] autorelease];
+	self.cameraController.sourceType = UIImagePickerControllerSourceTypeCamera;
+	
+	self.cameraController.cameraViewTransform = CGAffineTransformScale(self.cameraController.cameraViewTransform,
+																	   1.13f,
+																	   1.13f);
+	
+	self.cameraController.showsCameraControls = NO;
+	self.cameraController.navigationBarHidden = YES;
+	
+	self.wantsFullScreenLayout = YES;
 	
 	return self;
 }
@@ -51,26 +63,24 @@
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
-	UIView *contentView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
-			
-	contentView.backgroundColor = [UIColor clearColor];
+	ar_overlayView = [[UIView alloc] initWithFrame:CGRectZero];
+	ar_overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:.5];
 	
-	if (self.debugMode) [contentView addSubview:_debugView];
+	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
 	
-	self.view = contentView;
-	[contentView release];
+	self.view = ar_overlayView;
 }
 
 - (void)setDebugMode:(BOOL)flag {
 	if (self.debugMode == flag) return;
 	
-	_debugMode = flag;
+	ar_debugMode = flag;
 	
 	//we don't need to update the view.
 	if (![self isViewLoaded]) return;
 	
-	if (self.debugMode) [self.view addSubview:_debugView];
-	else [_debugView removeFromSuperview];
+	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
+	else [ar_debugView removeFromSuperview];
 }
 
 - (void)viewDidLoad {
@@ -108,7 +118,7 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return interfaceOrientation == UIInterfaceOrientationLandscapeRight;
+	return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 - (void)startListening {
@@ -154,9 +164,9 @@
 	
 	if (pointAzimuth < leftAzimuth) {
 		//it's past the 0 point.
-		point.x = ((2 * M_PI - leftAzimuth + pointAzimuth) / VIEWPORT_WIDTH_RADIANS) * realityView.frame.size.height;
+		point.x = ((2 * M_PI - leftAzimuth + pointAzimuth) / VIEWPORT_WIDTH_RADIANS) * realityView.frame.size.width;
 	} else {
-		point.x = ((pointAzimuth - leftAzimuth) / VIEWPORT_WIDTH_RADIANS) * realityView.frame.size.height;
+		point.x = ((pointAzimuth - leftAzimuth) / VIEWPORT_WIDTH_RADIANS) * realityView.frame.size.width;
 	}
 	
 	//y coordinate.
@@ -165,7 +175,7 @@
 	
 	double topInclination = self.centerCoordinate.inclination - VIEWPORT_HEIGHT_RADIANS / 2.0;
 	
-	point.y = realityView.frame.size.width - ((pointInclination - topInclination) / VIEWPORT_HEIGHT_RADIANS) * realityView.frame.size.width;
+	point.y = realityView.frame.size.height - ((pointInclination - topInclination) / VIEWPORT_HEIGHT_RADIANS) * realityView.frame.size.height;
 	
 	return point;
 }
@@ -179,19 +189,23 @@ UIAccelerationValue rollingX, rollingZ;
 	
 	//update the center coordinate.
 	
-	rollingX = (acceleration.x * kFilteringFactor) + (rollingX * (1.0 - kFilteringFactor));
-    rollingZ = (acceleration.z * kFilteringFactor) + (rollingZ * (1.0 - kFilteringFactor));
-			
-	if (rollingX > 0.0) {
-		self.centerCoordinate.inclination =  - atan(rollingZ / rollingX) - M_PI;
-	} else if (rollingX < 0.0) {
-		self.centerCoordinate.inclination = - atan(rollingZ / rollingX);// + M_PI;
-	} else if (rollingZ < 0) {
+	//NSLog(@"x: %f y: %f z: %f", acceleration.x, acceleration.y, acceleration.z);
+	
+	//this should be different based on orientation.
+	
+	rollingZ  = (acceleration.z * kFilteringFactor) + (rollingZ  * (1.0 - kFilteringFactor));
+    rollingX = (acceleration.y * kFilteringFactor) + (rollingX * (1.0 - kFilteringFactor));
+	
+	if (rollingZ > 0.0) {
+		self.centerCoordinate.inclination = atan(rollingX / rollingZ) + M_PI / 2.0;
+	} else if (rollingZ < 0.0) {
+		self.centerCoordinate.inclination = atan(rollingX / rollingZ) - M_PI / 2.0;// + M_PI;
+	} else if (rollingX < 0) {
 		self.centerCoordinate.inclination = M_PI/2.0;
-	} else if (rollingZ >= 0) {
+	} else if (rollingX >= 0) {
 		self.centerCoordinate.inclination = 3 * M_PI/2.0;
 	}
-	
+		
 	[self updateLocations];
 }
 
@@ -219,7 +233,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 
 - (void)addCoordinates:(NSArray *)newCoordinates {
 	[ar_coordinates addObjectsFromArray:newCoordinates];
-		
+	
 	for (ARCoordinate *coordinate in ar_coordinates) {		
 		//call out for the delegate's view.
 		//there's probably a better time to do this.
@@ -256,7 +270,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 		return;
 	}
 	
-	_debugView.text = [self.centerCoordinate description];
+	ar_debugView.text = [self.centerCoordinate description];
 	
 	int index = 0;
 	for (ARCoordinate *item in ar_coordinates) {
@@ -265,14 +279,14 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 				
 		if ([self viewportContainsCoordinate:item]) {
 			
-			CGPoint loc = [self pointInView:self.view forCoordinate:item];
+			CGPoint loc = [self pointInView:ar_overlayView forCoordinate:item];
 			
-			float width = viewToDraw.frame.size.width;
-			float height = viewToDraw.frame.size.height;
+			float width = viewToDraw.bounds.size.width;
+			float height = viewToDraw.bounds.size.height;
 			
 			viewToDraw.frame = CGRectMake(loc.x - width / 2.0, loc.y - width / 2.0, width, height);
 			
-			[self.view addSubview:viewToDraw];
+			[ar_overlayView addSubview:viewToDraw];
 			
 		} else {
 			[viewToDraw removeFromSuperview];
@@ -282,9 +296,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-	
-	//NSLog(@"x: %f y: %f z: %f", newHeading.x, newHeading.y, newHeading.z);
-	
+		
 	self.centerCoordinate.azimuth = fmod(newHeading.magneticHeading + 90.0, 360.0) * (2 * (M_PI / 360.0));
 	[self updateLocations];
 }
@@ -294,11 +306,25 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+	
+	[self.cameraController setCameraOverlayView:ar_overlayView];
+	[self presentModalViewController:self.cameraController animated:NO];
+	
+	[ar_overlayView setFrame:self.cameraController.view.bounds];
+	
 	[super viewDidAppear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+		
+	if (self.debugMode) {
+		[ar_debugView sizeToFit];
+		[ar_debugView setFrame:CGRectMake(0,
+										  ar_overlayView.frame.size.height - ar_debugView.frame.size.height,
+										  ar_overlayView.frame.size.width,
+										  ar_debugView.frame.size.height)];
+	}
 }
 
 - (void)didReceiveMemoryWarning {
@@ -311,11 +337,13 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
+	[ar_overlayView release];
+	ar_overlayView = nil;
 }
 
 
 - (void)dealloc {
-	[_debugView release];
+	[ar_debugView release];
 	
 	[ar_coordinateViews release];
 	[ar_coordinates release];

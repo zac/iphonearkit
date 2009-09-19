@@ -3,7 +3,7 @@
 //  ARKitDemo
 //
 //  Created by Haseman on 8/1/09.
-//  Copyright 2009 Gravity Mobile. All rights reserved.
+//  Copyright 2009 Zac White. All rights reserved.
 //
 
 #import "ARGeoCoordinate.h"

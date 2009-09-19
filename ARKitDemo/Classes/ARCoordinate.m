@@ -3,7 +3,7 @@
 //  ARKitDemo
 //
 //  Created by Zac White on 8/1/09.
-//  Copyright 2009 Gravity Mobile. All rights reserved.
+//  Copyright 2009 Zac White. All rights reserved.
 //
 
 #import "ARCoordinate.h"
@@ -58,7 +58,7 @@
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"%@ r: %fm φ: %f° θ: %f°", self.title, self.radialDistance, self.azimuth * (180.0/M_PI), self.inclination * (180.0/M_PI)];
+	return [NSString stringWithFormat:@"%@ r: %.3fm φ: %.3f° θ: %.3f°", self.title, self.radialDistance, self.azimuth * (180.0/M_PI), self.inclination * (180.0/M_PI)];
 }
 
 @end

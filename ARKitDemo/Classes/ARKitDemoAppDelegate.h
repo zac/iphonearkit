@@ -3,7 +3,7 @@
 //  ARKitDemo
 //
 //  Created by Zac White on 8/1/09.
-//  Copyright Gravity Mobile 2009. All rights reserved.
+//  Copyright Zac White 2009. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
