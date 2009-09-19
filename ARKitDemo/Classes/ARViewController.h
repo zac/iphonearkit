@@ -27,7 +27,7 @@
 	
 	UIImagePickerController *cameraController;
 	
-	id delegate;
+	NSObject<ARViewDelegate> *delegate;
 	
 @private
 	BOOL ar_debugMode;
@@ -68,7 +68,7 @@
 
 @property (nonatomic, retain) UIImagePickerController *cameraController;
 
-@property (nonatomic, assign) id delegate;
+@property (nonatomic, assign) NSObject<ARViewDelegate> *delegate;
 
 @property (retain) ARCoordinate *centerCoordinate;
 

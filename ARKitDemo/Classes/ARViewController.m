@@ -20,7 +20,7 @@
 
 @synthesize coordinates = ar_coordinates;
 
-@synthesize delegate = ar_delegate;
+@synthesize delegate;
 
 @synthesize cameraController;
 
@@ -226,9 +226,9 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 - (void)addCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated {
 	//do some kind of animation?
 	[ar_coordinates addObject:coordinate];
-	if ([self.delegate respondsToSelector:@selector(viewForCoordinate:)]) {
-		[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
-	}
+	
+	//message the delegate.
+	[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
 }
 
 - (void)addCoordinates:(NSArray *)newCoordinates {
@@ -237,9 +237,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	for (ARCoordinate *coordinate in ar_coordinates) {		
 		//call out for the delegate's view.
 		//there's probably a better time to do this.
-		if ([self.delegate respondsToSelector:@selector(viewForCoordinate:)]) {
-			[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
-		}
+		[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
 	}
 }
 
