@@ -22,7 +22,9 @@
 		if ([geoLocation isKindOfClass:[ARGeoCoordinate class]]) {
 			[geoLocation calibrateUsingOrigin:centerLocation];
 			
-			NSLog(@"geo: %@", geoLocation);
+			if (geoLocation.radialDistance > self.maximumDistance) {
+				self.maximumDistance = geoLocation.radialDistance;
+			}
 		}
 	}
 }

@@ -16,6 +16,10 @@
 @synthesize locationManager, accelerometerManager;
 @synthesize centerCoordinate;
 
+@synthesize scalesViewsBasedOnDistance;
+@synthesize maximumDistance;
+@synthesize minimumScaleFactor;
+
 @synthesize debugMode = ar_debugMode;
 
 @synthesize coordinates = ar_coordinates;
@@ -46,6 +50,10 @@
 	self.cameraController.showsCameraControls = NO;
 	self.cameraController.navigationBarHidden = YES;
 	
+	self.scalesViewsBasedOnDistance = NO;
+	self.maximumDistance = 0.0;
+	self.minimumScaleFactor = 1.0;
+	
 	self.wantsFullScreenLayout = YES;
 	
 	return self;
@@ -64,7 +72,6 @@
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
 	ar_overlayView = [[UIView alloc] initWithFrame:CGRectZero];
-	ar_overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:.5];
 	
 	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
 	
@@ -113,7 +120,9 @@
 	
 	//check the height.
 	result = result && (coordinate.inclination > bottomInclination && coordinate.inclination < topInclination);
-		
+	
+	//NSLog(@"coordinate: %@ result: %@", coordinate, result?@"YES":@"NO");
+	
 	return result;
 }
 
@@ -226,18 +235,20 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 - (void)addCoordinate:(ARCoordinate *)coordinate animated:(BOOL)animated {
 	//do some kind of animation?
 	[ar_coordinates addObject:coordinate];
+		
+	if (coordinate.radialDistance > self.maximumDistance) {
+		self.maximumDistance = coordinate.radialDistance;
+	}
 	
 	//message the delegate.
 	[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
 }
 
 - (void)addCoordinates:(NSArray *)newCoordinates {
-	[ar_coordinates addObjectsFromArray:newCoordinates];
 	
-	for (ARCoordinate *coordinate in ar_coordinates) {		
-		//call out for the delegate's view.
-		//there's probably a better time to do this.
-		[ar_coordinateViews addObject:[self.delegate viewForCoordinate:coordinate]];
+	//go through and add each coordinate.
+	for (ARCoordinate *coordinate in newCoordinates) {
+		[self addCoordinate:coordinate animated:NO];
 	}
 }
 
@@ -274,20 +285,35 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	for (ARCoordinate *item in ar_coordinates) {
 		
 		UIView *viewToDraw = [ar_coordinateViews objectAtIndex:index];
-				
+		
 		if ([self viewportContainsCoordinate:item]) {
 			
 			CGPoint loc = [self pointInView:ar_overlayView forCoordinate:item];
 			
-			float width = viewToDraw.bounds.size.width;
-			float height = viewToDraw.bounds.size.height;
+			CGFloat scaleFactor = 1.0;
+			if (self.scalesViewsBasedOnDistance) {
+				scaleFactor = 1.0 - self.minimumScaleFactor * (item.radialDistance / self.maximumDistance);
+			}
+			
+			float width = viewToDraw.bounds.size.width * scaleFactor;
+			float height = viewToDraw.bounds.size.height * scaleFactor;
 			
 			viewToDraw.frame = CGRectMake(loc.x - width / 2.0, loc.y - width / 2.0, width, height);
-			
-			[ar_overlayView addSubview:viewToDraw];
+						
+			//if we don't have a superview, set it up.
+			if (!(viewToDraw.superview)) {
+				[ar_overlayView addSubview:viewToDraw];
+				[ar_overlayView sendSubviewToBack:viewToDraw];
+				
+				//set the scale if it needs it.
+				if (self.scalesViewsBasedOnDistance) {
+					viewToDraw.transform = CGAffineTransformMakeScale(scaleFactor, scaleFactor);
+				}
+			}
 			
 		} else {
 			[viewToDraw removeFromSuperview];
+			viewToDraw.transform = CGAffineTransformIdentity;
 		}
 		index++;
 	}

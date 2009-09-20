@@ -22,6 +22,9 @@
 	
 	viewController.delegate = self;
 	
+	viewController.scalesViewsBasedOnDistance = YES;
+	viewController.minimumScaleFactor = .5;
+	
 	NSMutableArray *tempLocationArray = [[NSMutableArray alloc] initWithCapacity:10];
 	
 	CLLocation *tempLocation;
@@ -228,9 +231,9 @@
 	[newCenter release];
 	
 	[viewController startListening];
-		
+			
 	[window addSubview:viewController.view];
-		
+	
     // Override point for customization after application launch
     [window makeKeyAndVisible];
 }
@@ -242,6 +245,8 @@
 	
 	CGRect theFrame = CGRectMake(0, 0, BOX_WIDTH, BOX_HEIGHT);
 	UIView *tempView = [[UIView alloc] initWithFrame:theFrame];
+	
+	tempView.backgroundColor = [UIColor colorWithWhite:.5 alpha:.3];
 	
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, BOX_WIDTH, 20.0)];
 	titleLabel.backgroundColor = [UIColor colorWithWhite:.3 alpha:.8];
@@ -264,6 +269,8 @@
 
 
 - (void)dealloc {
+	
+	//NEW COMMENT!
     [window release];
     [super dealloc];
 }

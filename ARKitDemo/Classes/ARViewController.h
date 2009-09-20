@@ -29,6 +29,10 @@
 	
 	NSObject<ARViewDelegate> *delegate;
 	
+	BOOL scaleViewsBasedOnDistance;
+	double maximumDistance;
+	double minimumScaleFactor;
+	
 @private
 	BOOL ar_debugMode;
 	
@@ -43,6 +47,10 @@
 @property (readonly) NSArray *coordinates;
 
 @property BOOL debugMode;
+
+@property BOOL scalesViewsBasedOnDistance;
+@property double maximumDistance;
+@property double minimumScaleFactor;
 
 //adding coordinates to the underlying data model.
 - (void)addCoordinate:(ARCoordinate *)coordinate;
