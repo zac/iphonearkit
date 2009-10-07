@@ -33,11 +33,8 @@
 @implementation LogicTests (ARViewControllerTests)
 
 - (void)testPointInView {
-	
+		
 	ARViewController *viewController = [[ARViewController alloc] init];
-			
-	STAssertTrue(YES, @"");
-	return;
 	
 	ARCoordinate *coordinate = [[ARCoordinate alloc] init];
 	coordinate.azimuth = 0.0;
