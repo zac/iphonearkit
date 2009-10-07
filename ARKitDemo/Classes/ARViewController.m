@@ -24,21 +24,22 @@
 
 @synthesize coordinates = ar_coordinates;
 
-@synthesize delegate;
+@synthesize delegate, locationDelegate, accelerometerDelegate;
 
 @synthesize cameraController;
 
 - (id)init {
 	if (!(self = [super init])) return nil;
 	
-	ar_debugView = [[UILabel alloc] initWithFrame:CGRectZero];
-	ar_debugView.textAlignment = UITextAlignmentCenter;
-	ar_debugView.text = @"Waiting...";
+	ar_debugView = nil;
+	ar_overlayView = nil;
 	
 	ar_debugMode = NO;
 	
 	ar_coordinates = [[NSMutableArray alloc] init];
 	ar_coordinateViews = [[NSMutableArray alloc] init];
+	
+#if !TARGET_IPHONE_SIMULATOR
 	
 	self.cameraController = [[[UIImagePickerController alloc] init] autorelease];
 	self.cameraController.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -49,7 +50,7 @@
 	
 	self.cameraController.showsCameraControls = NO;
 	self.cameraController.navigationBarHidden = YES;
-	
+#endif
 	self.scalesViewsBasedOnDistance = NO;
 	self.maximumDistance = 0.0;
 	self.minimumScaleFactor = 1.0;
@@ -65,13 +66,22 @@
 	
 	//use the passed in location manager instead of ours.
 	self.locationManager = manager;
+	self.locationManager.delegate = self;
+	
+	self.locationDelegate = nil;
 	
 	return self;
 }
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
+	[ar_overlayView release];
 	ar_overlayView = [[UIView alloc] initWithFrame:CGRectZero];
+	
+	[ar_debugView release];
+	ar_debugView = [[UILabel alloc] initWithFrame:CGRectZero];
+	ar_debugView.textAlignment = UITextAlignmentCenter;
+	ar_debugView.text = @"Waiting...";
 	
 	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
 	
@@ -142,8 +152,10 @@
 		self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
 		
 		[self.locationManager startUpdatingHeading];
-		self.locationManager.delegate = self;
 	}
+	
+	//steal back the delegate.
+	self.locationManager.delegate = self;
 	
 	if (!self.accelerometerManager) {
 		self.accelerometerManager = [UIAccelerometer sharedAccelerometer];
@@ -216,6 +228,11 @@ UIAccelerationValue rollingX, rollingZ;
 	}
 		
 	[self updateLocations];
+	
+	if (self.accelerometerDelegate && [self.accelerometerDelegate respondsToSelector:@selector(accelerometer:didAccelerate:)]) {
+		//forward the acceleromter.
+		[self.accelerometerDelegate accelerometer:accelerometer didAccelerate:acceleration];
+	}
 }
 
 NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, void *ignore) {
@@ -298,7 +315,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 			float width = viewToDraw.bounds.size.width * scaleFactor;
 			float height = viewToDraw.bounds.size.height * scaleFactor;
 			
-			viewToDraw.frame = CGRectMake(loc.x - width / 2.0, loc.y - width / 2.0, width, height);
+			viewToDraw.frame = CGRectMake(loc.x - width / 2.0, loc.y - height / 2.0, width, height);
 						
 			//if we don't have a superview, set it up.
 			if (!(viewToDraw.superview)) {
@@ -321,21 +338,46 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
 		
-	self.centerCoordinate.azimuth = fmod(newHeading.magneticHeading + 90.0, 360.0) * (2 * (M_PI / 360.0));
+	self.centerCoordinate.azimuth = fmod(newHeading.magneticHeading, 360.0) * (2 * (M_PI / 360.0));
 	[self updateLocations];
+	
+	if (self.locationDelegate && [self.locationDelegate respondsToSelector:@selector(locationManager:didUpdateHeading:)]) {
+		//forward the call.
+		[self.locationDelegate locationManager:manager didUpdateHeading:newHeading];
+	}
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager {
+	
+	if (self.locationDelegate && [self.locationDelegate respondsToSelector:@selector(locationManagerShouldDisplayHeadingCalibration:)]) {
+		//forward the call.
+		return [self.locationDelegate locationManagerShouldDisplayHeadingCalibration:manager];
+	}
+	
 	return YES;
 }
 
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+	if (self.locationDelegate && [self.locationDelegate respondsToSelector:@selector(locationManager:didUpdateToLocation:fromLocation:)]) {
+		//forward the call.
+		[self.locationDelegate locationManager:manager didUpdateToLocation:newLocation fromLocation:oldLocation];
+	}
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+	if (self.locationDelegate && [self.locationDelegate respondsToSelector:@selector(locationManager:didFailWithError:)]) {
+		//forward the call.
+		return [self.locationDelegate locationManager:manager didFailWithError:error];
+	}
+}
+
 - (void)viewDidAppear:(BOOL)animated {
-	
+#if !TARGET_IPHONE_SIMULATOR
 	[self.cameraController setCameraOverlayView:ar_overlayView];
 	[self presentModalViewController:self.cameraController animated:NO];
 	
 	[ar_overlayView setFrame:self.cameraController.view.bounds];
-	
+#endif
 	[super viewDidAppear:animated];
 }
 

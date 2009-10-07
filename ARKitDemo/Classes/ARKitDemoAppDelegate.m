@@ -34,7 +34,7 @@
 	location.latitude = 39.550051;
 	location.longitude = -105.782067;
 	
-	tempLocation = [[CLLocation alloc] initWithCoordinate:location altitude:-1609.0 horizontalAccuracy:1.0 verticalAccuracy:1.0 timestamp:[NSDate date]];
+	tempLocation = [[CLLocation alloc] initWithCoordinate:location altitude:1609.0 horizontalAccuracy:1.0 verticalAccuracy:1.0 timestamp:[NSDate date]];
 	
 	tempCoordinate = [ARGeoCoordinate coordinateWithLocation:tempLocation];
 	tempCoordinate.title = @"Denver";
@@ -231,7 +231,7 @@
 	[newCenter release];
 	
 	[viewController startListening];
-			
+	
 	[window addSubview:viewController.view];
 	
     // Override point for customization after application launch
@@ -246,7 +246,7 @@
 	CGRect theFrame = CGRectMake(0, 0, BOX_WIDTH, BOX_HEIGHT);
 	UIView *tempView = [[UIView alloc] initWithFrame:theFrame];
 	
-	tempView.backgroundColor = [UIColor colorWithWhite:.5 alpha:.3];
+	//tempView.backgroundColor = [UIColor colorWithWhite:.5 alpha:.3];
 	
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, BOX_WIDTH, 20.0)];
 	titleLabel.backgroundColor = [UIColor colorWithWhite:.3 alpha:.8];
@@ -263,6 +263,9 @@
 
 	[tempView addSubview:titleLabel];
 	[tempView addSubview:pointView];
+	
+	[titleLabel release];
+	[pointView release];
 	
 	return [tempView autorelease];
 }

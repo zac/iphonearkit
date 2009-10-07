@@ -28,8 +28,10 @@
 	UIImagePickerController *cameraController;
 	
 	NSObject<ARViewDelegate> *delegate;
+	NSObject<CLLocationManagerDelegate> *locationDelegate;
+	NSObject<UIAccelerometerDelegate> *accelerometerDelegate;
 	
-	BOOL scaleViewsBasedOnDistance;
+	BOOL scalesViewsBasedOnDistance;
 	double maximumDistance;
 	double minimumScaleFactor;
 	
@@ -77,6 +79,8 @@
 @property (nonatomic, retain) UIImagePickerController *cameraController;
 
 @property (nonatomic, assign) NSObject<ARViewDelegate> *delegate;
+@property (nonatomic, assign) NSObject<CLLocationManagerDelegate> *locationDelegate;
+@property (nonatomic, assign) NSObject<UIAccelerometerDelegate> *accelerometerDelegate;
 
 @property (retain) ARCoordinate *centerCoordinate;
 
