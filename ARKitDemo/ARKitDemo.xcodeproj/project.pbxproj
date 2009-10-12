@@ -23,6 +23,7 @@
 		1171B3DD106EE83500CC3630 /* ARGeoCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE169F571025704E00556F8F /* ARGeoCoordinate.m */; };
 		1171B3DE106EE83500CC3630 /* ARGeoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11609B0A1026014F00A964C8 /* ARGeoViewController.m */; };
 		1171B42C106EEB3600CC3630 /* LogicTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1171B42B106EEB3600CC3630 /* LogicTests.m */; };
+		117BCE9210829C1E007A27AB /* ARVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 117BCE9110829C1E007A27AB /* ARVector.m */; };
 		1D3623260D0F684500981E51 /* ARKitDemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* ARKitDemoAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -56,6 +57,8 @@
 		1171B42A106EEB3600CC3630 /* LogicTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogicTests.h; sourceTree = "<group>"; };
 		1171B42B106EEB3600CC3630 /* LogicTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogicTests.m; sourceTree = "<group>"; };
 		1171B440106EEBDB00CC3630 /* UnitTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnitTests-Info.plist"; sourceTree = "<group>"; };
+		117BCE9010829C1E007A27AB /* ARVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARVector.h; sourceTree = "<group>"; };
+		117BCE9110829C1E007A27AB /* ARVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARVector.m; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* ARKitDemoAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARKitDemoAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* ARKitDemoAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARKitDemoAppDelegate.m; sourceTree = "<group>"; };
@@ -122,6 +125,8 @@
 			children = (
 				112543A81024DE590086106E /* ARCoordinate.h */,
 				112543A91024DE590086106E /* ARCoordinate.m */,
+				117BCE9010829C1E007A27AB /* ARVector.h */,
+				117BCE9110829C1E007A27AB /* ARVector.m */,
 				111A142B1024C8A6002D39A1 /* ARViewController.h */,
 				111A142A1024C8A6002D39A1 /* ARViewController.m */,
 				CE169F561025704E00556F8F /* ARGeoCoordinate.h */,
@@ -291,6 +296,7 @@
 				1171B3DD106EE83500CC3630 /* ARGeoCoordinate.m in Sources */,
 				1171B3DE106EE83500CC3630 /* ARGeoViewController.m in Sources */,
 				1171B42C106EEB3600CC3630 /* LogicTests.m in Sources */,
+				117BCE9210829C1E007A27AB /* ARVector.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

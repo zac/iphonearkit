@@ -16,6 +16,9 @@
 
 - (UIView *)viewForCoordinate:(ARCoordinate *)coordinate;
 
+@optional
+- (BOOL)shouldAutorotateViewsToInterfaceOrientation:(UIInterfaceOrientation)possibleOrientation;
+
 @end
 
 
@@ -35,7 +38,17 @@
 	double maximumDistance;
 	double minimumScaleFactor;
 	
+	UIInterfaceOrientation viewInterfaceOrientation;
+	
 @private
+	double _latestHeading;
+	UIAccelerationValue _latestXAcceleration;
+	UIAccelerationValue _latestYAcceleration;
+	UIAccelerationValue _latestZAcceleration;
+	
+	//in radians.
+	double _viewportRotation;
+	
 	BOOL ar_debugMode;
 	
 	UIView *ar_overlayView;
@@ -53,6 +66,8 @@
 @property BOOL scalesViewsBasedOnDistance;
 @property double maximumDistance;
 @property double minimumScaleFactor;
+
+@property (readonly) UIInterfaceOrientation viewInterfaceOrientation;
 
 //adding coordinates to the underlying data model.
 - (void)addCoordinate:(ARCoordinate *)coordinate;
@@ -72,9 +87,9 @@
 - (void)startListening;
 - (void)updateLocations;
 
-- (CGPoint)pointInView:(UIView *)realityView forCoordinate:(ARCoordinate *)coordinate;
+- (CGPoint)pointInView:(UIView *)realityView withView:(UIView *)viewToDraw forCoordinate:(ARCoordinate *)coordinate;
 
-- (BOOL)viewportContainsCoordinate:(ARCoordinate *)coordinate;
+- (BOOL)viewportContainsView:(UIView *)viewToDraw forCoordinate:(ARCoordinate *)coordinate;
 
 @property (nonatomic, retain) UIImagePickerController *cameraController;
 

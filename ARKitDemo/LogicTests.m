@@ -41,7 +41,7 @@
 	coordinate.inclination = 0.0;
 	coordinate.radialDistance = 10.0;
 	
-	CGPoint thePoint = [viewController pointInView:viewController.view forCoordinate:coordinate];
+	CGPoint thePoint = [viewController pointInView:viewController.view withView:[[[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)] autorelease] forCoordinate:coordinate];
 	
 	CGRect viewRect = viewController.view.frame;
 	
