@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1109BC311082F1B2006FFB4B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1109BC301082F1B2006FFB4B /* QuartzCore.framework */; };
+		1109BCBE1082F1D4006FFB4B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1109BC301082F1B2006FFB4B /* QuartzCore.framework */; };
 		1118AA4A10257DCE00C94460 /* location.png in Resources */ = {isa = PBXBuildFile; fileRef = 1118AA4910257DCE00C94460 /* location.png */; };
 		111A141C1024C875002D39A1 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A141B1024C875002D39A1 /* CoreLocation.framework */; };
 		111A142C1024C8A6002D39A1 /* ARViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 111A142A1024C8A6002D39A1 /* ARViewController.m */; };
@@ -32,17 +34,8 @@
 		CE169F581025704E00556F8F /* ARGeoCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE169F571025704E00556F8F /* ARGeoCoordinate.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		11A884BD10730D5D006B9518 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 11192949106E7C3D00D96627;
-			remoteInfo = UnitTests;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
+		1109BC301082F1B2006FFB4B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1118AA4910257DCE00C94460 /* location.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = location.png; sourceTree = "<group>"; };
 		1119294A106E7C3D00D96627 /* UnitTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		111A141B1024C875002D39A1 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -80,6 +73,7 @@
 				1171B295106EAD6500CC3630 /* CoreGraphics.framework in Frameworks */,
 				1171B2A2106EAD6B00CC3630 /* CoreLocation.framework in Frameworks */,
 				1171B2B0106EAD6F00CC3630 /* MapKit.framework in Frameworks */,
+				1109BCBE1082F1D4006FFB4B /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +86,7 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				111A141C1024C875002D39A1 /* CoreLocation.framework in Frameworks */,
 				116DC887102933A200EB5A0A /* MapKit.framework in Frameworks */,
+				1109BC311082F1B2006FFB4B /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +172,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1109BC301082F1B2006FFB4B /* QuartzCore.framework */,
 				116DC886102933A200EB5A0A /* MapKit.framework */,
 				111A141B1024C875002D39A1 /* CoreLocation.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
@@ -218,7 +214,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				11A884BE10730D5D006B9518 /* PBXTargetDependency */,
 			);
 			name = ARKitDemo;
 			productName = ARKitDemo;
@@ -308,14 +303,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		11A884BE10730D5D006B9518 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 11192949106E7C3D00D96627 /* UnitTests */;
-			targetProxy = 11A884BD10730D5D006B9518 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1119294C106E7C3E00D96627 /* Debug */ = {

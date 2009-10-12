@@ -8,6 +8,8 @@
 
 #import "ARViewController.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 #define VIEWPORT_WIDTH_RADIANS .5
 #define VIEWPORT_HEIGHT_RADIANS .7392
 
@@ -16,9 +18,11 @@
 @synthesize locationManager, accelerometerManager;
 @synthesize centerCoordinate;
 
-@synthesize scalesViewsBasedOnDistance;
-@synthesize maximumDistance;
-@synthesize minimumScaleFactor;
+@synthesize scaleViewsBasedOnDistance, rotateViewsBasedOnPerspective;
+@synthesize maximumScaleDistance;
+@synthesize minimumScaleFactor, maximumRotationAngle;
+
+@synthesize updateFrequency;
 
 @synthesize debugMode = ar_debugMode;
 
@@ -39,6 +43,9 @@
 	ar_coordinates = [[NSMutableArray alloc] init];
 	ar_coordinateViews = [[NSMutableArray alloc] init];
 	
+	_updateTimer = nil;
+	self.updateFrequency = 1 / 20.0;
+	
 #if !TARGET_IPHONE_SIMULATOR
 	
 	self.cameraController = [[[UIImagePickerController alloc] init] autorelease];
@@ -51,9 +58,12 @@
 	self.cameraController.showsCameraControls = NO;
 	self.cameraController.navigationBarHidden = YES;
 #endif
-	self.scalesViewsBasedOnDistance = NO;
-	self.maximumDistance = 0.0;
+	self.scaleViewsBasedOnDistance = NO;
+	self.maximumScaleDistance = 0.0;
 	self.minimumScaleFactor = 1.0;
+	
+	self.rotateViewsBasedOnPerspective = NO;
+	self.maximumRotationAngle = M_PI / 6.0;
 	
 	self.wantsFullScreenLayout = YES;
 	
@@ -86,6 +96,22 @@
 	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
 	
 	self.view = ar_overlayView;
+}
+
+- (void)setUpdateFrequency:(double)newUpdateFrequency {
+	
+	updateFrequency = newUpdateFrequency;
+	
+	if (!_updateTimer) return;
+	
+	[_updateTimer invalidate];
+	[_updateTimer release];
+	
+	_updateTimer = [[NSTimer scheduledTimerWithTimeInterval:self.updateFrequency
+													 target:self
+												   selector:@selector(updateLocations:)
+												   userInfo:nil
+													repeats:YES] retain];
 }
 
 - (void)setDebugMode:(BOOL)flag {
@@ -226,8 +252,6 @@ UIAccelerationValue rollingX, rollingZ;
 	} else if (rollingX >= 0) {
 		self.centerCoordinate.inclination = 3 * M_PI/2.0;
 	}
-		
-	[self updateLocations];
 	
 	if (self.accelerometerDelegate && [self.accelerometerDelegate respondsToSelector:@selector(accelerometer:didAccelerate:)]) {
 		//forward the acceleromter.
@@ -253,8 +277,8 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	//do some kind of animation?
 	[ar_coordinates addObject:coordinate];
 		
-	if (coordinate.radialDistance > self.maximumDistance) {
-		self.maximumDistance = coordinate.radialDistance;
+	if (coordinate.radialDistance > self.maximumScaleDistance) {
+		self.maximumScaleDistance = coordinate.radialDistance;
 	}
 	
 	//message the delegate.
@@ -289,9 +313,9 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	}
 }
 
-- (void)updateLocations {
+- (void)updateLocations:(NSTimer *)timer {
 	//update locations!
-		
+	
 	if (!ar_coordinateViews || ar_coordinateViews.count == 0) {
 		return;
 	}
@@ -308,8 +332,8 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 			CGPoint loc = [self pointInView:ar_overlayView forCoordinate:item];
 			
 			CGFloat scaleFactor = 1.0;
-			if (self.scalesViewsBasedOnDistance) {
-				scaleFactor = 1.0 - self.minimumScaleFactor * (item.radialDistance / self.maximumDistance);
+			if (self.scaleViewsBasedOnDistance) {
+				scaleFactor = 1.0 - self.minimumScaleFactor * (item.radialDistance / self.maximumScaleDistance);
 			}
 			
 			float width = viewToDraw.bounds.size.width * scaleFactor;
@@ -317,15 +341,32 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 			
 			viewToDraw.frame = CGRectMake(loc.x - width / 2.0, loc.y - height / 2.0, width, height);
 						
+			CATransform3D transform = CATransform3DIdentity;
+			
+			//set the scale if it needs it.
+			if (self.scaleViewsBasedOnDistance) {
+				//scale the perspective transform if we have one.
+				transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor);
+			}
+			
+			if (self.rotateViewsBasedOnPerspective) {
+				transform.m34 = 1.0 / 300.0;
+				
+				double itemAzimuth = item.azimuth;
+				double centerAzimuth = self.centerCoordinate.azimuth;
+				if (itemAzimuth - centerAzimuth > M_PI) centerAzimuth += 2*M_PI;
+				if (itemAzimuth - centerAzimuth < -M_PI) itemAzimuth += 2*M_PI;
+				
+				double angleDifference = itemAzimuth - centerAzimuth;
+				transform = CATransform3DRotate(transform, self.maximumRotationAngle * angleDifference / (VIEWPORT_HEIGHT_RADIANS / 2.0) , 0, 1, 0);
+			}
+			
+			viewToDraw.layer.transform = transform;
+			
 			//if we don't have a superview, set it up.
 			if (!(viewToDraw.superview)) {
 				[ar_overlayView addSubview:viewToDraw];
 				[ar_overlayView sendSubviewToBack:viewToDraw];
-				
-				//set the scale if it needs it.
-				if (self.scalesViewsBasedOnDistance) {
-					viewToDraw.transform = CGAffineTransformMakeScale(scaleFactor, scaleFactor);
-				}
 			}
 			
 		} else {
@@ -339,7 +380,6 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
 		
 	self.centerCoordinate.azimuth = fmod(newHeading.magneticHeading, 360.0) * (2 * (M_PI / 360.0));
-	[self updateLocations];
 	
 	if (self.locationDelegate && [self.locationDelegate respondsToSelector:@selector(locationManager:didUpdateHeading:)]) {
 		//forward the call.
@@ -378,12 +418,21 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	
 	[ar_overlayView setFrame:self.cameraController.view.bounds];
 #endif
+	
+	if (!_updateTimer) {
+		_updateTimer = [[NSTimer scheduledTimerWithTimeInterval:self.updateFrequency
+													 target:self
+												   selector:@selector(updateLocations:)
+												   userInfo:nil
+													repeats:YES] retain];
+	}
+	
 	[super viewDidAppear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-		
+	
 	if (self.debugMode) {
 		[ar_debugView sizeToFit];
 		[ar_debugView setFrame:CGRectMake(0,
@@ -391,6 +440,8 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 										  ar_overlayView.frame.size.width,
 										  ar_debugView.frame.size.height)];
 	}
+	
+	
 }
 
 - (void)didReceiveMemoryWarning {
@@ -416,6 +467,5 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 	
     [super dealloc];
 }
-
 
 @end

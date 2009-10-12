@@ -22,8 +22,10 @@
 	
 	viewController.delegate = self;
 	
-	viewController.scalesViewsBasedOnDistance = YES;
+	//viewController.scaleViewsBasedOnDistance = YES;
 	viewController.minimumScaleFactor = .5;
+	
+	viewController.rotateViewsBasedOnPerspective = YES;
 	
 	NSMutableArray *tempLocationArray = [[NSMutableArray alloc] initWithCapacity:10];
 	

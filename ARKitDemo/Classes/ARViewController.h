@@ -31,12 +31,20 @@
 	NSObject<CLLocationManagerDelegate> *locationDelegate;
 	NSObject<UIAccelerometerDelegate> *accelerometerDelegate;
 	
-	BOOL scalesViewsBasedOnDistance;
-	double maximumDistance;
+	BOOL scaleViewsBasedOnDistance;
+	double maximumScaleDistance;
 	double minimumScaleFactor;
+	
+	//defaults to 20hz;
+	double updateFrequency;
+	
+	BOOL rotateViewsBasedOnPerspective;
+	double maximumRotationAngle;
 	
 @private
 	BOOL ar_debugMode;
+	
+	NSTimer *_updateTimer;
 	
 	UIView *ar_overlayView;
 	
@@ -50,9 +58,14 @@
 
 @property BOOL debugMode;
 
-@property BOOL scalesViewsBasedOnDistance;
-@property double maximumDistance;
+@property BOOL scaleViewsBasedOnDistance;
+@property double maximumScaleDistance;
 @property double minimumScaleFactor;
+
+@property BOOL rotateViewsBasedOnPerspective;
+@property double maximumRotationAngle;
+
+@property double updateFrequency;
 
 //adding coordinates to the underlying data model.
 - (void)addCoordinate:(ARCoordinate *)coordinate;
@@ -70,7 +83,7 @@
 - (id)initWithLocationManager:(CLLocationManager *)manager;
 
 - (void)startListening;
-- (void)updateLocations;
+- (void)updateLocations:(NSTimer *)timer;
 
 - (CGPoint)pointInView:(UIView *)realityView forCoordinate:(ARCoordinate *)coordinate;
 

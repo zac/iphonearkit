@@ -10,6 +10,9 @@
 
 #import <MapKit/MapKit.h>
 
+#define degreesToRadians(x) (M_PI * x / 180.0)
+#define radiansToDegrees(x) (x * (180.0/M_PI))
+
 @class ARCoordinate;
 
 @protocol ARPersistentItem
