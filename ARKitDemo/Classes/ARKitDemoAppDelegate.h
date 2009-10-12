@@ -15,6 +15,7 @@
 }
 
 - (UIView *)viewForCoordinate:(ARCoordinate *)coordinate;
+- (BOOL)shouldAutorotateViewsToInterfaceOrientation:(UIInterfaceOrientation)possibleOrientation;
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 
