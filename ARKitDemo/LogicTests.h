@@ -26,6 +26,10 @@
 
 @end
 
+@interface LogicTests (ARCoordinateTests)
+- (void)testCoordinateEqual;
+@end
+
 @interface LogicTests (ARViewControllerTests)
 - (void)testViewportContainsCenter;
 @end

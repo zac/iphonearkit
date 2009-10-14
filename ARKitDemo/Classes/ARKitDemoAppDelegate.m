@@ -22,7 +22,7 @@
 	
 	viewController.delegate = self;
 	
-	//viewController.scaleViewsBasedOnDistance = YES;
+	viewController.scaleViewsBasedOnDistance = YES;
 	viewController.minimumScaleFactor = .5;
 	
 	viewController.rotateViewsBasedOnPerspective = YES;
