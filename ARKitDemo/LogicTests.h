@@ -27,5 +27,5 @@
 @end
 
 @interface LogicTests (ARViewControllerTests)
-- (void)testPointInView;
+- (void)testViewportContainsCenter;
 @end

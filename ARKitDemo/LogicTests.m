@@ -32,23 +32,22 @@
 
 @implementation LogicTests (ARViewControllerTests)
 
-- (void)testPointInView {
-		
+- (void)testViewportContainsCenter {
+	
 	ARViewController *viewController = [[ARViewController alloc] init];
+	viewController.debugMode = NO;
 	
 	ARCoordinate *coordinate = [[ARCoordinate alloc] init];
 	coordinate.azimuth = 0.0;
 	coordinate.inclination = 0.0;
 	coordinate.radialDistance = 10.0;
 	
-	CGPoint thePoint = [viewController pointInView:viewController.view forCoordinate:coordinate];
-	
-	CGRect viewRect = viewController.view.frame;
+	viewController.centerCoordinate = coordinate;
+		
+	STAssertTrue([viewController viewportContainsCoordinate:coordinate], @"Viewport does not contain center.");
 	
 	[coordinate release];
 	[viewController release];
-	
-	STAssertTrue(CGRectContainsPoint(viewRect, thePoint), @"Rect doesn't contain point.");
 }
 
 @end

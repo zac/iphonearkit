@@ -89,12 +89,15 @@
 	ar_overlayView = [[UIView alloc] initWithFrame:CGRectZero];
 	
 	[ar_debugView release];
-	ar_debugView = [[UILabel alloc] initWithFrame:CGRectZero];
-	ar_debugView.textAlignment = UITextAlignmentCenter;
-	ar_debugView.text = @"Waiting...";
 	
-	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
-	
+	if (self.debugMode) {
+		ar_debugView = [[UILabel alloc] initWithFrame:CGRectZero];
+		ar_debugView.textAlignment = UITextAlignmentCenter;
+		ar_debugView.text = @"Waiting...";
+		
+		[ar_overlayView addSubview:ar_debugView];
+	}
+		
 	self.view = ar_overlayView;
 }
 
@@ -124,10 +127,6 @@
 	
 	if (self.debugMode) [ar_overlayView addSubview:ar_debugView];
 	else [ar_debugView removeFromSuperview];
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
 }
 
 - (BOOL)viewportContainsCoordinate:(ARCoordinate *)coordinate {
