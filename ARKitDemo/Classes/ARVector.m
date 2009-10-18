@@ -17,7 +17,7 @@
 }
 
 - (ARVector *)crossProductWithVector:(ARVector *)vector {
-	
+	return nil;
 }
 
 @end

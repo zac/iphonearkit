@@ -19,6 +19,7 @@
 @property double y;
 @property double z;
 
-- (ARVector *)dotProductWithVector:(ARVector *)vector;
+- (double)dotProductWithVector:(ARVector *)vector;
+- (ARVector *)crossProductWithVector:(ARVector *)vector;
 
 @end

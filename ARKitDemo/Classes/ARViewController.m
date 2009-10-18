@@ -190,9 +190,7 @@
 	
 	//check the height.
 	result = result && (coordinate.inclination > bottomInclination && coordinate.inclination < topInclination);
-	
-	//NSLog(@"coordinate: %@ result: %@", coordinate, result?@"YES":@"NO");
-	
+		
 	return result;
 }
 
@@ -415,13 +413,6 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 			if (!(viewToDraw.superview)) {
 				[ar_overlayView addSubview:viewToDraw];
 				[ar_overlayView sendSubviewToBack:viewToDraw];
-				
-				//set the scale if it needs it.
-				if (self.scalesViewsBasedOnDistance) {
-					//viewToDraw.transform = CGAffineTransformScale(viewToDraw.transform, scaleFactor, scaleFactor);
-					viewToDraw.layer.anchorPoint = CGPointMake(viewToDraw.bounds.size.width / 2.0, viewToDraw.bounds.size.height / 2.0);
-					viewToDraw.transform = CGAffineTransformMakeScale(scaleFactor, scaleFactor);
-				}
 			}
 			
 		} else {
@@ -557,7 +548,7 @@ NSComparisonResult LocationSortClosestFirst(ARCoordinate *s1, ARCoordinate *s2, 
 //		else _viewportRotation = M_PI / 2.0 - _viewportRotation - _viewportRotation;
 //	}
 	
-	[self updateLocations];
+	[self updateLocations:nil];
 }
 
 - (CGFloat)_rotationFromOrientation:(UIInterfaceOrientation)oldOrientation toOrientation:(UIInterfaceOrientation)newOrientation {
