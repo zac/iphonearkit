@@ -89,7 +89,8 @@
 	
 	viewController.centerCoordinate = coordinate;
 		
-	STAssertTrue([viewController viewportContainsCoordinate:coordinate], @"Viewport does not contain center.");
+	STAssertTrue([viewController viewportContainsView:[[[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)] autorelease]
+										forCoordinate:coordinate], @"Viewport does not contain center.");
 	
 	[coordinate release];
 	[viewController release];
